@@ -1,0 +1,71 @@
+---
+- name: Update repository cache
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  become: true
+
+- name: Install PostgreSQL
+  apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - postgresql-10
+    - postgresql-contrib
+    - libpq-dev
+    - python3
+    - python3-pip
+
+- name: Install psycopg2 library
+  become: true
+  pip:
+    name: psycopg2
+    executable: pip3
+
+- name: Ensure PostgreSQL is running
+  service:
+    name: postgresql
+    state: started
+    enabled: yes
+  become: true
+
+- name: Configure postgresql to listen on all interfaces
+  become: true
+  lineinfile:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: '^#?listen_addresses'
+    line: "listen_addresses = '*'"
+    state: present
+
+- name: Set password for postgresql user
+  postgresql_user:
+    name: "{{ postgres_user }}"
+    password: "{{ postgres_password }}"
+  become: true
+  become_user: postgres
+
+- name: Change PostgreSQL auth method to md5
+  lineinfile:
+    path: /etc/postgresql/10/main/pg_hba.conf
+    line: "host    all             all             0.0.0.0/0               md5"
+    state: present
+
+
+- name: Create database
+  become_user: postgres
+  postgresql_db:
+    name: "{{ postgres_db }}"
+    encoding: UTF8
+    lc_collate: en_US.UTF-8
+    lc_ctype: en_US.UTF-8
+    template: template0
+    state: present
+
+- name: Change PostgreSQL Port
+  lineinfile:
+    path: /etc/postgresql/10/main/postgresql.conf
+    regexp: '^#?port ='
+    line: "port = {{ postgres_port }}"
+    state: present
+  notify:
+    - Restart PostgreSQL

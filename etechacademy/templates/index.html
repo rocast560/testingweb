@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <img src="{{ url_for('static', filename='logo.png') }}" class="logo">
+    <br>
+    <h1>Welcome to eTech Academy!</h1>
+    <h5 style="text-align: center;">
+        Your premier destination for mastering the ever-evolving field of cybersecurity. At eTech Academy, we offer a comprehensive range of courses designed to equip you with the skills and knowledge needed to excel in the dynamic world of cyber threats and security.
+    </h5>
+    <!-- Search Bar -->
+    <div class="container mt-4">
+        <form method="post" action="{{ url_for('index.index') }}" class="mb-4">
+            <div class="input-group">
+                <input type="text" name="search_query" class="form-control" placeholder="Search for courses..." value="{{ search_query }}">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Search Results Section -->
+    {% if search_results %}
+        <div class="container mt-4">
+            <h2 style="text-align: center;">Search Results</h2>
+            {% for course in search_results %}
+                <p class="index_results"><strong>({{ course[0] }}) {{ course[1] }}</strong>: {{ course[2] }}</p>
+            {% endfor %}
+        </div>
+    {% else %}
+        {% if search_query %}
+            <div class="container mt-4">
+                <p class="index_results">No courses found matching your query: "{{ search_query }}"</p>
+            </div>
+        {% endif %}
+    {% endif %}
+    <!-- Courses Section -->
+    <div class="container mt-4">
+        <h2 style="text-align: center;">Our Most Popular Courses</h2>
+        <div class="row">
+            {% if courses %}
+                {% for course in courses %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card mb-4 h-100">
+                            <img src="{{ url_for('static', filename=course[2]) }}" class="card-img-top" alt="{{ course[0] }}">
+                            <div class="card-body">
+                                <h5 class="card-title"><strong>{{ course[0] }}</strong></h5>
+                                <p class="card-text">{{ course[1] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No courses available at the moment.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

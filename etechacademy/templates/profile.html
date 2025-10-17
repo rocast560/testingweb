@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Profile{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Display Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=True) %}
+        {% if messages %}
+            <div class="alert-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>User Profile</h3>
+        </div>
+        <div class="card-body">
+            <p class="card-text"><strong>Username:</strong> {{ user.username }}</p>
+            <p class="card-text"><strong>Role:</strong> {{ user.role }}</p>
+            <a href="{{ url_for('profile.edit_profile') }}" class="btn btn-primary">Edit Profile</a>
+            <a href="{{ url_for('profile.upload_file') }}" class="btn btn-dark mt-3">Upload File</a>
+        </div>
+    </div>
+
+    {% if user.role == 'instructor' %}
+        <h2 class="mt-4">Courses You Are Teaching</h2>
+        <a href="{{ url_for('courses.add_course') }}" class="btn btn-success mb-3 btn-block">Add New Course</a>
+        <div class="row justify-content-center">
+            {% if courses %}
+                {% for course in courses %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 d-flex flex-column">
+                            <img src="{{ url_for('static', filename=course[3]) }}" class="card-img-top" alt="{{ course[1] }}">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ course[1] }}</h5>  <!-- Course Title -->
+                                <p class="card-text">{{ course[2] }}</p>  <!-- Course Description -->
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You are not teaching any courses.</p>
+            {% endif %}
+        </div>
+    {% elif user.role == 'student' %}
+        <h2 class="mt-4 text-center">Enrolled Courses</h2>
+        <div class="row justify-content-center">
+            {% if courses %}
+                {% for course in courses %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 d-flex flex-column">
+                            <img src="{{ url_for('static', filename=course[3]) }}" class="card-img-top" alt="{{ course[0] }}">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ course[1] }}</h5>  <!-- Course Title -->
+                                <p class="card-text">{{ course[2] }}</p>  <!-- Course Description -->
+                                <div class="mt-auto"></div>
+                                <a href="{{ url_for('courses.unroll', course_id=course[0]) }}" class="btn btn-danger mt-2">Remove</a>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>You are not enrolled in any courses.</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

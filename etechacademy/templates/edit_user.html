@@ -1,0 +1,50 @@
+<!-- templates/edit_user.html -->
+
+{% extends "base.html" %}
+
+{% block title %}Edit User{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Edit User</h1>
+    <form method="post" action="{{ url_for('admin.edit_user', user_id=user_id) }}">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" class="form-control" value="{{ user_data[0] }}" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <div class="input-group">
+                <input type="password" id="password" name="password" class="form-control" value="{{ user_data[1] }}" placeholder="Leave blank to keep current password">
+                <div class="input-group-append">
+                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()">Show</button>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="role">Role:</label>
+            <select class="form-select" id="role" name="role" required>
+                <option value="instructor" {% if user_data[2] == 'instructor' %}selected{% endif %}>Instructor</option>
+                <option value="student" {% if user_data[2] == 'student' %}selected{% endif %}>Student</option>
+                <option value="admin" {% if user_data[2] == 'admin' %}selected{% endif %}>Admin</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Update User</button>
+    </form>
+</div>
+
+<script>
+    function togglePassword() {
+        var passwordField = document.getElementById('password');
+        var button = document.querySelector('button[onClick="togglePassword()"]');
+
+        if (passwordField.type == 'password') {
+            passwordField.type = 'text';
+            button.textContent = 'Hide';
+        } else {
+            passwordField.type = 'password';
+            button.textContent = 'Show'
+        }
+    }
+</script>
+{% endblock %}

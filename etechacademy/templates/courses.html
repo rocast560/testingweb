@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Courses{% endblock %}
+
+{% block content %}
+    <h1>Our Courses</h1>    
+    <div class="container">
+        <div class="mb-3">
+            {% if user and user.role in ['instructor', 'admin'] %}
+                <a href="{{ url_for('courses.add_course') }}" class="btn btn-primary">Add a New Course</a>
+            {% endif %}
+            <a href="{{ url_for('courses.search_course') }}" class="btn btn-primary">Search for More Courses</a>
+        </div>
+        <div class="row justify-content-center">
+            {% if courses %}
+                {% for course in courses %}
+                    <div class="col-md-4 mb-3">
+                        <div class="card h-100 d-flex flex-column">
+                            <img src="{{ url_for('static', filename=course[3]) }}" class="card-img-top" alt="{{ course[1] }}">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">{{ course[1] }}</h5>  <!-- Title of the course -->
+                                <p class="card-text">{{ course[2] }}</p>  <!-- Description of the course -->
+                                <!-- Spacer to push the button to the bottom -->
+                                <div class="mt-auto"></div>
+                                {% if user and user.role == 'student' %}
+                                    <a href="{{ url_for('courses.enroll', course_id=course[0]) }}" class="btn btn-success">Enroll</a> <!-- Enroll Button -->
+                                {% endif %}
+                                {% if user and user.role == 'instructor' or user.role == 'admin' %}
+                                    <a href="{{ url_for('courses.remove_course', course_id=course[0]) }}" class="btn btn-danger">Remove</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No courses available at the moment.</p>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}

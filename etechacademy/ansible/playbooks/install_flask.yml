@@ -1,0 +1,5 @@
+---
+- name: Install Flask Server
+  hosts: flask_app
+  roles:
+    - flask_app

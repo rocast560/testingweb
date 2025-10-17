@@ -1,0 +1,13 @@
+[Unit]
+Description=eTech Academy Web Application
+After=network.target
+
+[Service]
+User=root
+Group=root
+WorkingDirectory=/var/www/{{ web_app_name }}
+ExecStart=/usr/bin/python3 main.py
+Environment=PYTHONDONTWRITEBYTECODE=1
+
+[Install]
+WantedBy=multi-user.target

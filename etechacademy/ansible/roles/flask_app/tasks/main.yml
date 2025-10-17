@@ -1,0 +1,58 @@
+---
+- name: Install Python/Pip
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - libpq-dev
+    state: present
+    update_cache: yes
+
+- name: Create app directory on remote host
+  file:
+    path: "/var/lib/{{ web_app_name }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Copy code to remote host
+  copy:
+    src: "../../{{ item }}"
+    dest: "/var/lib/{{ web_app_name }}/"
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - requirements.txt
+    - main.py
+    - config.py
+    - app
+    - static
+    - templates
+
+- name: Create .env file
+  template:
+    src: env.j2
+    dest: "/var/lib/{{ web_app_name }}/.env"
+
+- name: Install Python Packages
+  pip:
+    requirements: "/var/lib/{{ web_app_name }}/requirements.txt"
+
+- name: Create systemd service file
+  template:
+    src: service.j2
+    dest: "/etc/systemd/system/{{ web_app_name }}.service"
+
+- name: Stop Service
+  systemd:
+    daemon_reload: yes
+    name: "{{ web_app_name }}"
+    state: stopped
+
+- name: Start and enable service
+  systemd:
+    name: "{{ web_app_name }}"
+    state: started
+    enabled: yes
