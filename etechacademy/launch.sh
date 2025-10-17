@@ -9,10 +9,11 @@ echo ""
 # 0. Install system dependencies if needed (Debian/Ubuntu)
 if command -v apt-get &> /dev/null; then
     echo "Checking system dependencies..."
-    if ! dpkg -s python3-pip python3-venv postgresql &> /dev/null; then
+    if ! dpkg -s python3-pip python3-venv postgresql build-essential libpq-dev &> /dev/null; then
         echo "Installing system dependencies..."
         sudo apt-get update
-        sudo apt-get install -y python3-pip python3-venv postgresql postgresql-contrib libpq-dev
+        sudo apt-get install -y python3-pip python3-venv postgresql postgresql-contrib \
+            libpq-dev build-essential python3-dev gcc
     else
         echo "System dependencies are installed."
     fi
